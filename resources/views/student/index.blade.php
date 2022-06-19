@@ -3,7 +3,7 @@
 
 @section('main')
 
-	<div class="wrap-table">
+	<div style="width:1400px;" class="wrap-table">
 		<a class="btn btn-primary btn-sm" href="{{ route('student.create') }}">Add new student</a>		
 		@if( Session::has('success') ) 
 		<br>
@@ -26,6 +26,7 @@
 							<th>Cell</th>
 							<th>Username</th>
 							<th>Education</th>
+							<th>Courses</th>
 							<th>Photo</th>
 							<th width="200">Action</th>
 						</tr>
@@ -40,7 +41,16 @@
 							<td>{{ $student -> cell }}</td>
 							<td>{{ $student -> username }}</td>
 							<td>{{ $student -> education }}</td>
-							<td><img src="assets/media/img/pp_photo/istockphoto-615279718-612x612.jpg" alt=""></td>
+							<td>
+								<ul>
+								@forelse( json_decode($student -> courses) as $item )
+									<li>{{ $item }}</li>
+								@empty
+									<li>No course found</li>
+								@endforelse
+								</ul>
+							</td>
+							<td><img src="{{ url('storage/students/' . $student -> photo ) }}" alt=""></td>
 							<td>
 								<a class="btn btn-sm btn-info"   href="{{ route('student.show', $student -> id) }}">View</a>
 								<a class="btn btn-sm btn-warning" href="{{ route('student.edit', $student -> id) }}">Edit</a>

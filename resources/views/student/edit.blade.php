@@ -20,8 +20,9 @@
 					<p class="alert alert-success"> {{ Session::get('success') }} <button class="close" data-dismiss="alert">&times;</button> </p> 
 				@endif
 
-				<form action="{{ route('student.update', $edit_data -> id ) }}" method="POST">
+				<form action="{{ route('student.update', $edit_data -> id ) }}" method="POST" enctype="multipart/form-data">
 					@csrf 
+					@method('PUT')
 					<div class="form-group">
 						<label for="">Name</label>
 						<input name="name" class="form-control" value="{{ $edit_data -> name }}" type="text">
@@ -47,6 +48,40 @@
 							<option @if($edit_data -> education == 'BSc') selected @endif value="BSc">BSc</option>
 						</select>
 					</div>
+
+					<div class="form-group">
+						<label for="">Gender</label>
+						<hr>
+						<label>
+							<input name="gender" @if($edit_data -> gender == 'Male' ) checked @endif value="Male" type="radio">
+							Male
+						</label>
+						<label>
+							<input name="gender" @if($edit_data -> gender == 'Female' ) checked @endif value="Female" type="radio">
+							Female
+						</label>
+					</div>
+
+					<div class="form-group">
+						<label for="">Select your courses</label>
+						<hr>
+						@foreach( $courses as $course )
+						<label>
+							<input name="course[]" @if( in_array($course, json_decode($edit_data -> courses)) ) checked @endif value="{{ $course }}" type="checkbox">
+							{{ $course }}
+						</label>
+						<br>
+						@endforeach
+
+					</div>
+					<div class="form-group">
+						<input name="new_photo" type="file">
+						<input name="old_photo" value="{{ $edit_data -> photo }}" type="hidden">
+						<hr>
+						<img class="w-100" src="{{ url('storage/students/' . $edit_data -> photo ) }}" alt="">
+
+					</div>
+
 					<div class="form-group">
 						<input class="btn btn-primary" type="submit" value="Update Now">
 					</div>

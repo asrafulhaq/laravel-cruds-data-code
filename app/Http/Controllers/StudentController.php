@@ -37,26 +37,26 @@ class StudentController extends Controller
         // return $request -> all();
 
         // validation 
-        // $this -> validate($request, [ 
-        //     'name'  => 'required',
-        //     'email'  => 'required|email|unique:students',
-        //     'cell'  => 'required|starts_with:01,8801,+8801|unique:students',
-        //     'username'  => 'required|min:6|max:10|unique:students',
-        //     'edu'  => 'required',
-        // ],[
-        //    'name.required'  => 'নামের ঘর টি পুরোন করুন',
-        //    'email.email'  => 'ইমেইল টি সঠিক নয়',
-        //    'email.required'  => 'ইমেইলের ঘরটি পূরণ করুন',
-        // ]);
+        $this -> validate($request, [ 
+            'name'  => 'required',
+            'email'  => 'required|email|unique:students',
+            'cell'  => 'required|starts_with:01,8801,+8801|unique:students',
+            'username'  => 'required|min:6|max:10|unique:students',
+            'edu'  => 'required',
+        ],[
+           'name.required'  => 'নামের ঘর টি পুরোন করুন',
+           'email.email'  => 'ইমেইল টি সঠিক নয়',
+           'email.required'  => 'ইমেইলের ঘরটি পূরণ করুন',
+        ]);
 
 
-
+ 
         // upload photo
         if( $request -> hasFile('photo') ){
 
             $img = $request -> file('photo');
             $file_name = md5(time().rand()) .'.'. $img -> clientExtension();
-            $img -> move(public_path('photos/'), $file_name);  
+            $img -> move(storage_path('app/public/students/'), $file_name);   
 
         }else {
             $file_name = null;
@@ -115,7 +115,8 @@ class StudentController extends Controller
     {
         $edit_data = Student::findOrFail($id);
         return view('student.edit', [
-            'edit_data' => $edit_data
+            'edit_data' => $edit_data,
+            'courses'   => ['MERN Stack Devs','NFT Devs','BlockChain Devs','Laravel Devs','Django Devs','React Devs','Native Apps Devs']
         ]);
     }
     
@@ -129,12 +130,30 @@ class StudentController extends Controller
 
         $update_data = Student::findOrFail($id);
 
+        if( $request -> hasFile('new_photo') ){
+            $img = $request -> file('new_photo');
+            $file_name = md5(time().rand()) .'.'. $img -> clientExtension();
+            $img -> move(storage_path('app/public/students/'), $file_name);
+
+            unlink('storage/students/' . $request -> old_photo );
+            
+
+        }else {
+            $file_name = $request -> old_photo;
+        }
+
+
+
+
         $update_data -> update([
             'name'              => $request -> name,
             'email'             => $request -> email,
             'cell'              => $request -> cell,
             'username'          => $request -> username,
             'education'         => $request -> edu,
+            'courses'           => json_encode($request -> course),
+            'gender'            => $request -> gender,
+            'photo'             => $file_name,
         ]);
 
         return back() -> with('success', 'Student data updated sucessful');

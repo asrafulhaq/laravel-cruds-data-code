@@ -10,7 +10,7 @@
     <br>
     <div class="card shadow">
         <div class="card-body">
-            {{-- <img src="assets/media/img/pp_photo/istockphoto-615279718-612x612.jpg" alt=""> --}}
+            <img class="shadow" style="width:250px;height:250px; border-radius:50%;" src="{{ url('storage/students/' . $student -> photo ) }}" alt="">
             <h1>{{ $student -> name }}</h1>
             <h3>{{ $student -> email }}</h3>
             <p>{{ $student -> cell }}</p>
