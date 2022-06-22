@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\StaffAccountMail;
 use App\Models\Staff;
-use App\Notifications\StaffConfirmNotification;
 use Illuminate\Http\Request;
+use App\Mail\StaffAccountMail;
 use Illuminate\Support\Facades\Mail;
+use Intervention\Image\Facades\Image;
+use App\Notifications\StaffConfirmNotification;
 
 class StaffController extends Controller
 {
@@ -49,9 +50,30 @@ class StaffController extends Controller
 
         // Photo Upload 
         if( $request -> hasFile('photo') ){
+
+            // get image path 
             $img = $request -> file('photo');
+
+            // create a unique file name 
             $file_name = md5(time().rand()).'.'. $img -> clientExtension();
-            $img -> move(storage_path('app/public/staff/'), $file_name);
+
+            // intervension image setup 
+            $inter = Image::make( $img -> getRealPath());
+
+            // crete a water mark 
+            $water = Image::make('https://upload.wikimedia.org/wikipedia/commons/8/82/ONE-Logo.png');
+            $water -> opacity(30);
+            $inter -> insert($water, 'center');
+            
+            // upload image to storage path 
+            $inter -> save( storage_path('app/public/staff/') . $file_name);
+
+
+            // $img -> move(storage_path('app/public/staff/'), $file_name);
+
+
+
+
         }else {
             $file_name = 'avatar.png';
         }
@@ -64,7 +86,7 @@ class StaffController extends Controller
             'cell'      => $request -> cell, 
             'photo'      => $file_name, 
         ]);
-
+ 
         // mail for confirm
         $data = [
             'name'      => $request -> name,
